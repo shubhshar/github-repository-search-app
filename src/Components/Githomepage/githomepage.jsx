@@ -13,8 +13,8 @@ const GitHomepage = () => {
 
   const options = {
     headers: {
-      Authorization: `Bearer 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`
-      //Authorization: `Bearer ${process.env.MY_GITHUBSEARCH_APP_TOKEN}`
+      
+      Authorization: `Bearer ${process.env.MY_GITHUBSEARCH_APP_TOKEN}`
     }
   };
   const gitDataRef = useRef([]);
