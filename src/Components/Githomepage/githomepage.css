@@ -1,0 +1,134 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Mona Sans", Arial, sans-serif;
+  background: #eaeff1;
+}
+
+h2 {
+  font-family: "Hubot Sans", Arial, sans-serif;
+  color: #4d5050;
+}
+
+.searchbox input {
+  width: 150%;
+  padding-left: 10px;
+  height: 35px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  box-shadow: 4px 4px 10px 0px rgba(0, 0, 0, 0.5);
+}
+
+.searchandSort {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 80%;
+  margin-left: 10%;
+  position: static;
+}
+
+.sortCard button {
+  border: none;
+  padding: 15px 5px 15px 10px;
+  background: #6a6e6e;
+  border: none;
+  color: rgb(245, 237, 237);
+  box-shadow: 4px 4px 10px 0px rgba(0, 0, 0, 0.5);
+  border-radius: 5px;
+  width: max-content;
+  margin-right: 10%;
+  cursor: pointer;
+}
+
+.deactive {
+  display: none;
+}
+
+.cards-container {
+  display: inline-block;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.cards {
+  font-family: "Candara", sans-serif;
+  width: 340px;
+  overflow: hidden;
+  background: #fff;
+  border-radius: 10px;
+  min-height: 380px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  /* display: inline-block;
+  flex-direction: column;  */
+  margin: 10px;
+  padding-bottom: 20px;
+}
+
+.content {
+  padding: 5px;
+}
+
+.card__lang {
+  flex-wrap: nowrap;
+}
+
+.cards__img img {
+  width: 100%;
+  height: 140px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  object-fit: cover;
+}
+
+.profile__img img {
+  z-index: 1;
+  width: 120px;
+  height: 120px;
+  position: relative;
+  margin-top: -75px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 100px;
+  border: 10px solid #fff;
+  transition-duration: 0.4s;
+  transition-property: transform;
+}
+
+.profile__img img:hover {
+  transform: scale(1.1);
+}
+
+.card-star {
+  display: flex;
+  justify-content: center;
+  padding: 7px;
+}
+
+.card-watch {
+  display: flex;
+  justify-content: center;
+  padding: 7px;
+}
+
+@media only screen and (max-width: 527px) {
+  .searchandSort {
+    margin-left: 10%;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .searchbox {
+    width: 30%;
+  }
+
+  .sortCard button {
+    border: none;
+    padding: 5% 25%;
+    width: 100%;
+  }
+}
