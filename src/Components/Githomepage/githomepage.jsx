@@ -1,96 +1,78 @@
-import React, { useEffect, useMemo,useRef,useCallback, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import "./githomepage.css";
 import axios from "axios";
 import LoadingSpinner from "./Loading";
-import gitLogo from "../../../src/ic.png";
+import gitLogo from "../../ic.png";
 
 const GitHomepage = () => {
-  //const [gitData, setGitData] = useState([]);
+  const [gitData, setGitData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  //const [starCountRepo, setStarCountRepo] = useState([]);
+  const [starCountRepo, setStarCountRepo] = useState([]);
   const [searchVal, setSearchVal] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
 
   const options = {
     headers: {
-      Authorization: `Bearer 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`
-      //Authorization: `Bearer ${process.env.MY_GITHUBSEARCH_APP_TOKEN}`
-    }
+      Authorization: `Bearer ${process.env.MY_GITHUBSEARCH_APP_TOKEN}`,
+    },
   };
-  const gitDataRef = useRef([]);
-  const starCountRepoRef = useRef([]);
 
+  //Function to get data
+  const getData = useCallback(async () => {
+    try {
+      const response = await axios.get(
+        "https://api.github.com/repositories",
+        options
+      );
+      setGitData(response.data);
+    } catch (error) {
+      setGitData(null);
+    }
+  }, []);
 
-//Function to get data
-const getData = useCallback(async () => {
-  try {
-    const response = await axios.get(
-      "https://api.github.com/repositories",
-      options
+  // Function to get data from api based on reponame
+  const getStarRepo = useCallback(async () => {
+    setIsLoading(true);
+    const starrep = gitData.map((str) => str.full_name);
+    const starCountUrls = starrep.map(
+      (starOwnerName) => `https://api.github.com/repos/${starOwnerName}`
     );
-    gitDataRef.current = response.data;
-    console.log(response.data)
-  } catch (error) {
-    gitDataRef.current = null;
-  }
-}, []);
+    try {
+      const starCountDataArray = await axios.all(
+        starCountUrls.map((url) => axios.get(url, options))
+      );
+      setStarCountRepo(
+        starCountDataArray.map((countdata) => countdata.data.stargazers_count)
+      );
+    } catch (error) {
+      console.log("error occurred");
+    }
+    setIsLoading(false);
+  }, [gitData]);
 
-// Function to get data from api based on reponame
-const getStarCount = useCallback(async () => {
-  setIsLoading(true);
-  const starrep = gitDataRef.current.map((str) => str.full_name);
-  const starCountUrls = starrep.map(
-    (starOwnerName) => `https://api.github.com/repos/${starOwnerName}`
-  );
-  try {
-    const starCountDataArray = await axios.all(
-      starCountUrls.map((url) => axios.get(url, options))
-    );
-    starCountRepoRef.current = starCountDataArray.map(
-      (data) => data.data.stargazers_count
-    );
-  } catch (error) {
-    console.log("error occurred");
-  }
-  setIsLoading(false);
-}, []);
+  const aggregatedData = useMemo(() => {
+    return gitData.map((item, index) => ({
+      ...item,
+      starCount: starCountRepo[index],
+    }));
+  }, [gitData, starCountRepo]);
 
-const aggregatedData = useMemo(() => {
-  return gitDataRef.current.map((item, index) => ({
-    ...item,
-    starCount: starCountRepoRef.current[index]
-  }));
-}, []);
-
-  const filteredData = useMemo(() => {
-    return aggregatedData.filter((value) => {
-      if (searchVal === "") {
-        return value;
-      } else if (
-        value.full_name.toLowerCase().includes(searchVal.toLowerCase())
-      ) {
-        return value;
-      }
-      return null; 
-    });
-  }, [aggregatedData, searchVal]);
-  
-  const sortedData = useMemo(() => {
-    return filteredData.sort((a, b) => {
+  const sortedStarCount = useMemo(() => {
+    return aggregatedData.sort((a, b) => {
       return sortOrder === "asc"
         ? a.starCount - b.starCount
         : b.starCount - a.starCount;
     });
-  }, [filteredData, sortOrder]);
-  
+  }, [sortOrder]);
 
   useEffect(() => {
     getData();
   }, []);
 
   useEffect(() => {
-    getStarCount();
-  }, [gitDataRef,starCountRepoRef]);
+    getStarRepo();
+  }, [gitData]);
+
   return (
     <>
       <div className="headerGit">
@@ -108,11 +90,24 @@ const aggregatedData = useMemo(() => {
           />
         </div>
         <div className="sortCard">
-          <button onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}>Sort: ⭐ {sortOrder === "asc" ? "⬆" : "⬇"} </button>
+          <button
+            onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+          >
+            Sort: ⭐ {sortOrder === "asc" ? "⬆" : "⬇"}{" "}
+          </button>
         </div>
       </div>
-      {aggregatedData.length > 0 ? (
-      filteredData.map((item, index) => (
+      {aggregatedData
+        .filter((value) => {
+          if (searchVal === "") {
+            return value;
+          } else if (
+            value.full_name.toLowerCase().includes(searchVal.toLowerCase())
+          ) {
+            return value;
+          }
+        })
+        .map((item, index) => (
           <div className="cards-container" key={item.id}>
             <div className="cards " key={item.id}>
               <div className="cards__img">
@@ -139,7 +134,7 @@ const aggregatedData = useMemo(() => {
               </div>
             </div>
           </div>
-        ))):(<div className="no-data">No data to display</div>)}
+        ))}
     </>
   );
 };
