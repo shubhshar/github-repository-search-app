@@ -13,8 +13,8 @@ const GitHomepage = () => {
 
   const options = {
     headers: {
-      Authorization: `Bearer ${process.env.MY_GITHUBSEARCH_APP_TOKEN}`,
-    },
+      Authorization: `Bearer ${process.env.MY_GITHUBSEARCH_APP_TOKEN}`
+    }
   };
 
   //Function to get data
